@@ -9,16 +9,17 @@ generator client {
 
 plugin openapi {
     provider = '@zenstackhq/openapi'
+    flavor = 'rest'
     output = './openapi.json'
     title = 'Auto generated API'
     version = '0.1.0'
     summary = 'Created with ZenStack'
     description = 'Auto generated API created with ZenStack'
-    prefix = '/models'
+    prefix = '/api/models'
     securitySchemes = {
-        basic: { type: 'http', scheme: 'basic' },
         bearer: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-        apiKey: { type: 'apiKey', in: 'header', name: 'X-API-KEY' }
+        basic: { type: 'http', scheme: 'basic' },
+    // apiKey: { type: 'apiKey', in: 'header', name: 'X-API-KEY' }
     }
 }
 
@@ -55,5 +56,5 @@ model Post {
     @@allow('read', auth() != null && published)
 
     // full access by author
-    @@allow('all', author == auth() || contains(auth().email,'admin'))
+    @@allow('all', author == auth() || contains(auth().email, 'admin'))
 }

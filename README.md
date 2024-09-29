@@ -1,4 +1,4 @@
-# NestJS Prisma Zenstack Template
+# NestJS Prisma Zenstack JWT Template
 
 ## Description
 

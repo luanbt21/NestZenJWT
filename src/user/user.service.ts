@@ -11,8 +11,4 @@ export class UserService {
 	getAllUsers() {
 		return this.prismaService.user.findMany();
 	}
-
-	findOne(id: string) {
-		return this.prismaService.user.findFirst({ where: { id } });
-	}
 }

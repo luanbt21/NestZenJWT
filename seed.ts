@@ -1,14 +1,17 @@
 import { PrismaClient } from "@prisma/client";
-import { enhance } from "@zenstackhq/runtime";
+import { hash } from "bcrypt";
 
 const prisma = new PrismaClient();
-const enhancePrisma = enhance(prisma, { user: { id: "1" } });
+// const enhancePrisma = enhance(prisma, { user: { id: "1" } });
 
 async function main() {
-	await enhancePrisma.user.create({
+	await prisma.post.deleteMany();
+	await prisma.user.deleteMany();
+
+	await prisma.user.create({
 		data: {
 			email: "admin@example.com",
-			password: "1",
+			password: await hash("1", 10),
 			posts: {
 				createMany: {
 					data: [
@@ -26,10 +29,10 @@ async function main() {
 		},
 	});
 
-	await enhancePrisma.user.create({
+	await prisma.user.create({
 		data: {
 			email: "user1@example.com",
-			password: "1",
+			password: await hash("1", 10),
 			posts: {
 				createMany: {
 					data: [

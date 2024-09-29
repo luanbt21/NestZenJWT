@@ -18,6 +18,7 @@ export class PostService {
 	}
 
 	async publishPost(id: string) {
+		this.prismaService.post.findMany({});
 		return this.prismaService.post.update({
 			where: { id },
 			data: { published: true },

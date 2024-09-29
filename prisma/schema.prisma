@@ -26,7 +26,7 @@ model User {
 }
 
 /// @@allow('read', auth() != null && published)
-/// @@allow('all', author == auth())
+/// @@allow('all', author == auth() || contains(auth().email, 'admin'))
 model Post {
   id        String   @id() @default(cuid())
   createdAt DateTime @default(now())
