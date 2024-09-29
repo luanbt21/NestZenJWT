@@ -1,0 +1,59 @@
+datasource db {
+    provider = 'sqlite'
+    url = 'file:./dev.db'
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+plugin openapi {
+    provider = '@zenstackhq/openapi'
+    output = './openapi.json'
+    title = 'Auto generated API'
+    version = '0.1.0'
+    summary = 'Created with ZenStack'
+    description = 'Auto generated API created with ZenStack'
+    prefix = '/models'
+    securitySchemes = {
+        basic: { type: 'http', scheme: 'basic' },
+        bearer: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        apiKey: { type: 'apiKey', in: 'header', name: 'X-API-KEY' }
+    }
+}
+
+/**
+ * User model
+ */
+model User {
+    id       String @id @default(cuid())
+    email    String @unique @email @length(6, 32)
+    password String @password @omit
+    posts    Post[]
+
+    // everybody can signup
+    @@allow('create', true)
+
+    // full access by self
+    @@allow('all', auth() == this)
+}
+
+/**
+ * Post model
+ */
+model Post {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    title     String   @length(1, 256)
+    content   String
+    published Boolean  @default(false)
+    author    User     @relation(fields: [authorId], references: [id])
+    authorId  String
+
+    // allow read for all signin users
+    @@allow('read', auth() != null && published)
+
+    // full access by author
+    @@allow('all', author == auth() || contains(auth().email,'admin'))
+}
