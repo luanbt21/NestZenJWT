@@ -1,11 +1,12 @@
 services:
-  mysql:
-    image: mysql
+  postgres:
+    image: postgres
     ports:
-      - 3306:3306
+      - "5432:5432"
     env_file: .env
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
   redis:
     image: redis

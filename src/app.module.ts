@@ -12,6 +12,7 @@ import { PostModule } from "./post/post.module";
 import { PrismaService } from "./prisma.service";
 import { UserModule } from "./user/user.module";
 import { CrudMiddleware } from "./zen/crud.middleware";
+import { BackupModule } from "./backup/backup.module";
 
 @Module({
 	imports: [
@@ -30,6 +31,7 @@ import { CrudMiddleware } from "./zen/crud.middleware";
 		UserModule,
 		PostModule,
 		AuthModule,
+		BackupModule,
 	],
 	controllers: [AppController],
 	providers: [

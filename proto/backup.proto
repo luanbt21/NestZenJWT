@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package backup;
+
+service Backup {
+  rpc FindAll(GetBackupRequest) returns (GetBackupResponse) {}
+  rpc FindById(FindByIdRequest) returns (BackupFile) {}
+  rpc Dump(DumpRequest) returns (BackupFile) {}
+  rpc Restore(RestoreRequest) returns (Status) {}
+  rpc Delete(FindByIdRequest) returns (Status) {}
+}
+
+message Status {
+  string message = 1;
+}
+
+message FindByIdRequest {
+  string id = 1;
+}
+
+message BackupFile {
+  string id = 1;
+  string db_name = 2;
+  string file_name = 3;
+  string path = 4;
+  string size = 5;
+  string created_at = 6;
+  Provider provider = 7;
+}
+
+message GetBackupRequest {
+  optional int32 offset = 1;
+  optional int32 limit = 2;
+  string db_name = 3;
+  optional string start_date = 4;
+  optional string end_date = 5;
+  Provider provider = 6;
+}
+
+message GetBackupResponse {
+  repeated BackupFile files = 1;
+  int32 total = 2;
+}
+
+message DumpRequest {
+  string url = 1;
+  Provider provider = 2;
+}
+
+message RestoreRequest {
+  string url = 1;
+  Provider provider = 2;
+  string id = 3;
+}
+
+enum Provider {
+  UNKNOWN = 0;
+  POSTGRES = 1;
+  MYSQL = 2;
+  MONGODB = 3;
+}

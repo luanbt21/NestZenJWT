@@ -2,10 +2,9 @@ import { Injectable, NestMiddleware } from "@nestjs/common";
 import { auth, enhance } from "@zenstackhq/runtime";
 import RESTHandler from "@zenstackhq/server/api/rest";
 import { ZenStackMiddleware } from "@zenstackhq/server/express";
-
 import { Request, Response } from "express";
 
-import { AuthService } from "src/auth/auth.service";
+import { AuthService } from "../auth/auth.service";
 import { PrismaService } from "../prisma.service";
 
 @Injectable()
