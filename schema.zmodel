@@ -1,6 +1,6 @@
 datasource db {
-    provider = 'sqlite'
-    url = 'file:./dev.db'
+    provider = 'postgresql'
+    url = env("DATABASE_URL")
 }
 
 generator client {
@@ -27,20 +27,95 @@ plugin openapi {
     }
 }
 
-/**
- * User model
- */
-model User {
-    id       String @id @default(cuid())
-    email    String @unique @email @length(6, 32)
-    password String @password @omit
-    posts    Post[]
+abstract model Base {
+    id          String    @id @default(cuid())
+    description String?   @db.VarChar(4000)
+    deleted     DateTime? @omit
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt()
 
-    // everybody can signup
-    @@allow('create', true)
+    @@deny('read', deleted != null)
+    /// TODO: allow all for now, will be restricted later
+  @@allow('all', auth().role == 'ADMIN')
+    @@allow('read', auth() != null)
+}
 
-    // full access by self
-    @@allow('all', auth() == this)
+enum PermissionName {
+    AdministrativeUnit
+    Category
+    Organization
+    User
+}
+
+enum UserRole {
+    ADMIN
+    USER
+}
+
+
+enum PermissionType {
+    CREATE
+    READ
+    UPDATE
+    DELETE
+}
+
+model User extends Base {
+    email         String         @unique @email @length(6, 32)
+    phone         String?        @unique
+    password      String         @password @omit
+    name          String
+    groupUserId   String?
+    locked        Boolean        @default(false) @deny('update', auth() == this)
+    loginFailed   Int            @default(0) @omit @deny('all', true)
+
+    groups        UserGroup[]
+    role          UserRole
+    refreshTokens RefreshToken[] @omit
+    devices       Device[]       @omit
+    post          Post[]
+
+    @@unique([email, phone])
+}
+
+model UserGroup extends Base {
+    name        String       @unique
+
+    users       User[]
+    permissions Permission[]
+}
+
+model Permission extends Base {
+    name           PermissionName
+    permissionType PermissionType
+    disabled       Boolean        @default(false)
+
+    groups         UserGroup[]
+
+    @@unique([name, permissionType])
+}
+
+model RefreshToken extends Base {
+    token     String   @unique
+    userId    String
+    revoked   Boolean  @default(false)
+    user      User     @relation(fields: [userId], references: [id])
+    deviceId  String
+    device    Device   @relation(fields: [deviceId], references: [id])
+    publicKey String?
+    expiresAt DateTime
+
+    @@unique([userId, deviceId])
+}
+
+model Device extends Base {
+    name         String  //e.g., "iPhone", "Laptop"
+    userId       String
+    user         User           @relation(fields: [userId], references: [id])
+
+    refreshToken RefreshToken[]
+
+    @@unique([userId, name])
 }
 
 /**

@@ -4,8 +4,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -16,11 +16,102 @@ generator dbml {
   provider = "prisma-dbml-generator"
 }
 
+enum PermissionName {
+  AdministrativeUnit
+  Category
+  Organization
+  User
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum PermissionType {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+}
+
 model User {
-  id       String @id() @default(cuid())
-  email    String @unique()
-  password String
-  posts    Post[]
+  id            String         @id() @default(cuid())
+  description   String?        @db.VarChar(4000)
+  deleted       DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt()
+  email         String         @unique()
+  phone         String?        @unique()
+  password      String
+  name          String
+  groupUserId   String?
+  locked        Boolean        @default(false)
+  loginFailed   Int            @default(0)
+  groups        UserGroup[]
+  role          UserRole
+  refreshTokens RefreshToken[]
+  devices       Device[]
+  post          Post[]
+
+  @@unique([email, phone])
+}
+
+model UserGroup {
+  id          String       @id() @default(cuid())
+  description String?      @db.VarChar(4000)
+  deleted     DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt()
+  name        String       @unique()
+  users       User[]
+  permissions Permission[]
+}
+
+model Permission {
+  id             String         @id() @default(cuid())
+  description    String?        @db.VarChar(4000)
+  deleted        DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt()
+  name           PermissionName
+  permissionType PermissionType
+  disabled       Boolean        @default(false)
+  groups         UserGroup[]
+
+  @@unique([name, permissionType])
+}
+
+model RefreshToken {
+  id          String    @id() @default(cuid())
+  description String?   @db.VarChar(4000)
+  deleted     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt()
+  token       String    @unique()
+  userId      String
+  revoked     Boolean   @default(false)
+  user        User      @relation(fields: [userId], references: [id])
+  deviceId    String
+  device      Device    @relation(fields: [deviceId], references: [id])
+  publicKey   String?
+  expiresAt   DateTime
+
+  @@unique([userId, deviceId])
+}
+
+model Device {
+  id           String         @id() @default(cuid())
+  description  String?        @db.VarChar(4000)
+  deleted      DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt()
+  name         String
+  userId       String
+  user         User           @relation(fields: [userId], references: [id])
+  refreshToken RefreshToken[]
+
+  @@unique([userId, name])
 }
 
 model Post {

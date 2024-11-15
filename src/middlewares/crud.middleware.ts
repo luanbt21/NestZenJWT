@@ -5,7 +5,7 @@ import { ZenStackMiddleware } from "@zenstackhq/server/express";
 import { Request, Response } from "express";
 
 import { AuthService } from "../auth/auth.service";
-import { PrismaService } from "../prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class CrudMiddleware implements NestMiddleware {

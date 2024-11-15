@@ -4,9 +4,89 @@
 
 Table User {
   id String [pk]
+  description String
+  deleted DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
   email String [unique, not null]
+  phone String [unique]
   password String [not null]
-  posts Post [not null]
+  name String [not null]
+  groupUserId String
+  locked Boolean [not null, default: false]
+  loginFailed Int [not null, default: 0]
+  groups UserGroup [not null]
+  role UserRole [not null]
+  refreshTokens RefreshToken [not null]
+  devices Device [not null]
+  post Post [not null]
+
+  indexes {
+    (email, phone) [unique]
+  }
+}
+
+Table UserGroup {
+  id String [pk]
+  description String
+  deleted DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [unique, not null]
+  users User [not null]
+  permissions Permission [not null]
+}
+
+Table Permission {
+  id String [pk]
+  description String
+  deleted DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name PermissionName [not null]
+  permissionType PermissionType [not null]
+  disabled Boolean [not null, default: false]
+  groups UserGroup [not null]
+
+  indexes {
+    (name, permissionType) [unique]
+  }
+}
+
+Table RefreshToken {
+  id String [pk]
+  description String
+  deleted DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  token String [unique, not null]
+  userId String [not null]
+  revoked Boolean [not null, default: false]
+  user User [not null]
+  deviceId String [not null]
+  device Device [not null]
+  publicKey String
+  expiresAt DateTime [not null]
+
+  indexes {
+    (userId, deviceId) [unique]
+  }
+}
+
+Table Device {
+  id String [pk]
+  description String
+  deleted DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  userId String [not null]
+  user User [not null]
+  refreshToken RefreshToken [not null]
+
+  indexes {
+    (userId, name) [unique]
+  }
 }
 
 Table Post {
@@ -19,5 +99,40 @@ Table Post {
   author User [not null]
   authorId String [not null]
 }
+
+Table UserToUserGroup {
+  groupsId String [ref: > UserGroup.id]
+  usersId String [ref: > User.id]
+}
+
+Table PermissionToUserGroup {
+  permissionsId String [ref: > Permission.id]
+  groupsId String [ref: > UserGroup.id]
+}
+
+Enum PermissionName {
+  AdministrativeUnit
+  Category
+  Organization
+  User
+}
+
+Enum UserRole {
+  ADMIN
+  USER
+}
+
+Enum PermissionType {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+}
+
+Ref: RefreshToken.userId > User.id
+
+Ref: RefreshToken.deviceId > Device.id
+
+Ref: Device.userId > User.id
 
 Ref: Post.authorId > User.id

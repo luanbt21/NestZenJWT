@@ -9,14 +9,23 @@ import { AppController } from "./app.controller";
 import { AuthModule } from "./auth/auth.module";
 import { JwtAuthGuard } from "./auth/jwt-auth.guard";
 import { PostModule } from "./post/post.module";
-import { PrismaService } from "./prisma.service";
+import { PrismaService } from "./prisma/prisma.service";
 import { UserModule } from "./user/user.module";
-import { CrudMiddleware } from "./zen/crud.middleware";
+import { CrudMiddleware } from "./middlewares/crud.middleware";
 import { BackupModule } from "./backup/backup.module";
+import { RedisModule } from "@liaoliaots/nestjs-redis";
+import { PrismaModule } from "./prisma/prisma.module";
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
+		RedisModule.forRoot({
+			config: {
+				url: process.env.REDIS_URL,
+				keyPrefix: `${process.env.APP_NAME}:`,
+			},
+		}),
+		PrismaModule,
 		ZenStackModule.registerAsync({
 			useFactory: (request: Request, prisma: PrismaService) => {
 				return {
