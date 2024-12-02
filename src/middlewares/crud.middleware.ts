@@ -18,7 +18,7 @@ export class CrudMiddleware implements NestMiddleware {
 		const [type, token] = req.headers.authorization?.split(" ") ?? [];
 		let user: auth.User | null = null;
 		if (type === "Bearer" && token) {
-			const payload = await this.authService.verifyAsync(token);
+			const payload = await this.authService.verifyToken(token);
 			user = await this.authService.validate(payload);
 		}
 

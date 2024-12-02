@@ -17454,8 +17454,6 @@
                 "required": [
                   "updatedAt",
                   "token",
-                  "userId",
-                  "deviceId",
                   "expiresAt"
                 ],
                 "properties": {
@@ -17491,14 +17489,8 @@
                   "token": {
                     "type": "string"
                   },
-                  "userId": {
-                    "type": "string"
-                  },
                   "revoked": {
                     "type": "boolean"
-                  },
-                  "deviceId": {
-                    "type": "string"
                   },
                   "publicKey": {
                     "oneOf": [
@@ -17591,14 +17583,8 @@
                   "token": {
                     "type": "string"
                   },
-                  "userId": {
-                    "type": "string"
-                  },
                   "revoked": {
                     "type": "boolean"
-                  },
-                  "deviceId": {
-                    "type": "string"
                   },
                   "publicKey": {
                     "oneOf": [
@@ -17837,8 +17823,7 @@
                 "type": "object",
                 "required": [
                   "updatedAt",
-                  "name",
-                  "userId"
+                  "name"
                 ],
                 "properties": {
                   "description": {
@@ -17871,9 +17856,6 @@
                     "format": "date-time"
                   },
                   "name": {
-                    "type": "string"
-                  },
-                  "userId": {
                     "type": "string"
                   }
                 }
@@ -17951,9 +17933,6 @@
                     "format": "date-time"
                   },
                   "name": {
-                    "type": "string"
-                  },
-                  "userId": {
                     "type": "string"
                   }
                 }
@@ -18162,8 +18141,7 @@
                 "required": [
                   "updatedAt",
                   "title",
-                  "content",
-                  "authorId"
+                  "content"
                 ],
                 "properties": {
                   "createdAt": {
@@ -18182,9 +18160,6 @@
                   },
                   "published": {
                     "type": "boolean"
-                  },
-                  "authorId": {
-                    "type": "string"
                   }
                 }
               },
@@ -18244,9 +18219,6 @@
                   },
                   "published": {
                     "type": "boolean"
-                  },
-                  "authorId": {
-                    "type": "string"
                   }
                 }
               },

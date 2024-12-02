@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
-import { APP_GUARD, REQUEST } from "@nestjs/core";
+import { APP_FILTER, APP_GUARD, REQUEST } from "@nestjs/core";
 import { enhance } from "@zenstackhq/runtime";
 import { ZenStackModule } from "@zenstackhq/server/nestjs";
 import { Request } from "express";
@@ -15,6 +15,7 @@ import { CrudMiddleware } from "./middlewares/crud.middleware";
 import { BackupModule } from "./backup/backup.module";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { PrismaModule } from "./prisma/prisma.module";
+import { PrismaExceptionsFilter } from "./exception-filters/prisma-exception-filters";
 
 @Module({
 	imports: [
@@ -48,6 +49,10 @@ import { PrismaModule } from "./prisma/prisma.module";
 		{
 			provide: APP_GUARD,
 			useClass: JwtAuthGuard,
+		},
+		{
+			provide: APP_FILTER,
+			useClass: PrismaExceptionsFilter,
 		},
 	],
 })
